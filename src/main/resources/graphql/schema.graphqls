@@ -1,0 +1,188 @@
+directive @uppercase on FIELD_DEFINITION
+
+scalar LocalDate
+scalar UUID
+scalar BigDecimal
+
+type SystemDate {
+   id: ID!
+   name: DayType
+   day: LocalDate
+}
+
+type SystemRate {
+   id: ID!
+   name: String  @uppercase
+   rate: BigDecimal
+}
+
+type DocumentType {
+   id: ID!
+   name: String  @uppercase
+   expiration: String
+}
+
+input SystemDateInput {
+  id: ID
+  name: DayType
+  day: LocalDate
+  userModify: String!
+}
+
+input SystemRateInput {
+  id: ID
+  name: String
+  rate: BigDecimal
+  userModify: String!
+}
+
+input DocumentTypeInput {
+  id: ID
+  name: String
+  expiration: String
+  userModify: String!
+}
+
+type TemplateField {
+  id:ID
+  template: Template
+  nombre: String
+  tipo: TemplateFieldType
+  valorDefault: String
+}
+
+type Template {
+  id: ID
+  nombre: String
+  fileRepo: String
+  destino: DestinoType
+  json: String
+  blockly: String
+  fechaCreacion: LocalDate
+  fechaModificacion: LocalDate
+  autor: String
+  activo: Boolean
+  campos: [TemplateField]
+}
+
+type DatasourceField {
+  id:ID
+  datasource: Datasource
+  nombre: String
+  tipo: DatasourceFieldType
+  validaciones: String
+}
+
+type Datasource {
+  id: ID
+  nombre: String
+  json: String
+  blockly: String
+  config: String
+  configBlockly: String
+  mapping: String
+  fechaCreacion: LocalDate
+  fechaModificacion: LocalDate
+  autor: String
+  activo: Boolean
+  campos: [DatasourceField]!
+}
+
+input TemplateFieldInput {
+  id:ID
+  nombre: String
+  tipo: TemplateFieldType
+  valorDefault: String
+  userModify: String!
+}
+
+input TemplateInput {
+  id: ID
+  nombre: String
+  fileRepo: String
+  destino: String
+  json: String
+  blockly: String
+  autor: String
+  activo: Boolean
+  campos: [TemplateFieldInput]
+  userModify: String!
+}
+
+input DatasourceFieldInput {
+  id:ID
+  nombre: String
+  tipo: DatasourceFieldType
+  validaciones: String
+  userModify: String!
+}
+
+input DatasourceInput {
+  id: ID
+  nombre: String
+  autor: String
+  activo: Boolean
+  json: String
+  blockly: String
+  config: String
+  configBlockly: String
+  mapping: String
+  campos: [DatasourceFieldInput]
+  userModify: String!
+}
+
+
+
+type Query {
+  systemDates(name: DayType) : [SystemDate]
+  systemDate(id: ID!) : SystemDate
+  systemRates(name: String) : [SystemRate]
+  systemRate(id: ID, name: String) : SystemRate
+  documentTypes(name: String) : [DocumentType]
+  documentType(id: ID!) : DocumentType
+  templates(nombre: String): [Template]
+  template(id: ID!): Template
+  datasources(nombre: String): [Datasource]
+  datasource(id: ID!): Datasource
+}
+
+type Mutation {
+  addSystemDate(systemDateInput: SystemDateInput!): SystemDate!
+  updateSystemDate(systemDateInput: SystemDateInput!): SystemDate!
+  deleteSystemDate(id: ID!, user: String!): SystemDate!
+  addSystemRate(systemRateInput: SystemRateInput!): SystemRate!
+  updateSystemRate(systemRateInput: SystemRateInput!): SystemRate!
+  deleteSystemRate(id: ID!, user: String!): SystemRate!
+  addDocumentType(documentTypeInput: DocumentTypeInput!): DocumentType!
+  updateDocumentType(documentTypeInput: DocumentTypeInput!): DocumentType!
+  deleteDocumentType(id: ID!, user: String!): DocumentType!
+  addTemplate(templateInput: TemplateInput!): Template!
+  addTemplateField(id: ID!, templateFieldInput: TemplateFieldInput!): TemplateField!
+  updateTemplateField(id: ID!, templateFieldInput: TemplateFieldInput!): TemplateField!
+  deleteTemplateField(id: ID!, fieldId: ID!, user: String!): TemplateField!
+  updateTemplate(templateInput: TemplateInput!): Template!
+  deleteTemplate(id: ID!, user: String!): Template!
+  addDatasource(datasourceInput: DatasourceInput!): Datasource!
+  addDatasourceField(id: ID!, datasourceFieldInput: DatasourceFieldInput!): DatasourceField!
+  updateDatasourceField(id: ID!, datasourceFieldInput: DatasourceFieldInput!): DatasourceField!
+  deleteDatasourceField(id: ID!, fieldId: ID!, user: String!): DatasourceField!
+  updateDatasource(datasourceInput: DatasourceInput!): Datasource
+  deleteDatasource(id: ID!, user: String!): Datasource
+}
+
+enum DayType {
+    HOY, MANANA, AYER, REPROCESO, FESTIVO
+}
+
+enum DestinoType {
+    Email, Reporte, SMS, Web, Otro, NoDefinido
+}
+
+enum TemplateFieldType {
+  Texto, Entero, Real, Fecha, ERROR
+}
+
+enum DatasourceFieldType {
+    Texto, Entero, Real, Fecha, ERROR
+}
+

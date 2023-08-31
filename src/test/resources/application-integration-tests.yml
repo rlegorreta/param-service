@@ -1,0 +1,8 @@
+param-service:
+  testing: true
+eureka:
+  client:
+    registerWithEureka: false
+logging:
+  level:
+    root: INFO

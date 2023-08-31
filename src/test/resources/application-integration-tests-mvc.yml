@@ -1,0 +1,11 @@
+param-service:
+  testing: true
+eureka:
+  client:
+    registerWithEureka: false
+spring:
+  main:
+    allow-bean-definition-overriding: true
+logging:
+  level:
+    root: INFO

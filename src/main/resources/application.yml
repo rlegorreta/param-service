@@ -1,0 +1,156 @@
+server:
+  port: 8350
+  shutdown: graceful
+  netty:
+    connection-timeout: 2s
+    idle-timeout: 15s
+
+spring:
+  application:
+    name: param-service
+  lifecycle:
+    timeout-per-shutdown-phase: 15s
+  main:
+    allow-bean-definition-overriding: false
+  config:
+    import: "optional:configserver:"   # Imports configuration data from a config server when available
+  cloud:
+    config:
+      uri: http://localhost:8071
+      request-connect-timeout: 5000   # Timeout on waiting to connect to the config server (ms)
+      request-read-timeout: 5000      # Timeout on waiting to read configuration data from the config server (ms)
+      fail-fast: true                 # In production, set to true. Makes a failure to connect to the config server fatal
+      retry:
+        max-attempts: 6
+        initial-interval: 1000        # Initial retry interval for backoff (ms)
+        max-interval: 2000            # Maximum retry interval for backoff (ms)
+        multiplier: 1.1               # Multiplier to compute the next interval
+    loadbalancer:
+      ribbon:
+        enabled: false
+    stream:
+      function:
+        definition: producer
+      kafka:
+        bindings:
+          producer-out-0:
+            producer:
+              configuration:
+                value.serializer: com.ailegorreta.commons.event.EventDTOSerializer
+        binder:
+          brokers: http://localhost:9092
+      bindings:
+        producer-out-0:
+          destination: param-audit
+          producer:
+            useNativeEncoding: true       # Enable using the custom deserializer
+  profiles:
+    active: local
+  security:
+    oauth2:
+      client:
+        registration:
+          param-service-client-credentials:
+            provider: spring
+            client-id: param-service
+            client-secret: param-service-secret
+            authorization-grant-type: client_credentials
+            scope: csys.facultad
+            client-name: param-service-client-credentials
+        provider:
+          spring:
+            issuer-uri: http://auth-service:9000
+            # ^ for localNoDocker & localCmdLine an 'auth' must be declared in hosts file
+        rest:
+          client-id: param-service-client-credentials
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth-service:9000
+  graphql:
+    schema:
+      printer:
+        enabled: true
+    graphiql:
+      enabled: true
+      path: /param/graphiql
+    path: /param/graphql
+  datasource:
+    url: jdbc:postgresql://localhost:5452/paramdb
+    username: "{cipher}AQBzB5guoWrnGQipEG1VTyENpg/jNP0jqw4rzd53WjhvFvABZeT8VsL8644zL/rNqxzbMpJz377N5Fn4sDFl9sifndFYU9kdD0VeJ3b0EmAJ1XeO+erwvYW10XbqgNoxWAf1tV6RaS/kkmtZ/1RBNqCvWqzadKszDwTAkA4LKeagxt0EdvDWEGMDXWMsKKTgepB07RYqB2wzIbFMnO49zpxaQu3z49NiSYBlT8oPp4FkYjdmjgwqzEIcK1QJS76jfS2EMSjcFa7MC5a0h9qvxc/oL3VA0IXD9wO+zJzgmka96iw2b9i7YX/d1Z32JRBhfRhNDw4FbqnCPDXV63H8Sz/QT+08mRuK7jj7B7xhS3Qmm53QplLKZVXvaGNjmPThaWQ="
+    password: "{cipher}AQBiVZ64BDgFtaVHgqMxBfS0li+ibMyBu7I9gg6qhve61My2SRtEIq4NrnxWYARTRp8wrcg8s1tlrHJC0lRHksKftLeDduW2FXvLe26uPhThT+XIYWNUvF1bH7mqzpdBkrLgvfY0oN1Q81ra55ySEVvmPga9WLEYTn9BWUjVGIf+PL5H+qE8NIBBfRaOQT3vgNVI8lJ7j5CRTCkRZa7XO1DYF7s4xc2/gvM7i0khY6/cVQCKQ7Ge15gkMvEQKGHEmvaalP9ZT6isJ0aRE+2+2DPWlKFuY6ovh7Rl/YvEm0bvW6jMLyojE88TNokApZNQSQxR74MBqpiBGyi7as5ADtmfcRS2T287GBmnjM5kHf7cwvY9hcoJPbyUP3TTCZiR23o="
+    hikari:
+      connection-timeout: 2000  # The maximum time (ms) to spend waiting to get a connection from the pool
+      maximum-pool-size: 5      # The maximum number of connections HikariCP will keep in the pool
+  jpa:
+    open-in-view: true
+  data:
+    rest:
+      base-path: /param/api/    # Base URL to use Spring Data REST api
+      detection-strategy: annotated
+    jpa:
+      repositories:
+        bootstrap-mode: deferred # Not used default bootstrap mode. see: https://www.baeldung.com/jpa-bootstrap-mode
+#  r2dbc:
+#    username: "{cipher}AQAwlsEKEoft5culvyzjD7uhF9k1xFFKHXAQkT6cVaVhqgo2Ls5/TVNNucJkK9NqPCf6UE6kXJ46o8IwGq/j00w87AJwbQEIN69tD5joIUWOA6mO0WBBYDIisMszlnExtQtFJ2FJUOk6C4tBQkzqnEHlKD4dOnZuHl2GLPF+TWzwz7060GxqYEwZ9keLyE60BEcaFPS9klPMB8KC6POy+8u7+xneJkPRHjeaAugqEIIjqIe0tGU0qjgI649JbuQvAGUVRNrLNTvby4uc3bUCtOn9E0IqWmls9TEFP2yULguF/rzW8bYpjOrknkh5oTLpS9UoEKe87i13PYAg8BphZ/pr0+JHQbVByefksjfq+OGck8xMzQz7d0lV8AHBce31Sv0="
+#    password: "{cipher}AQBTT7xm4Vpg6eBrLyAY+mBd1GVa2JrlmqdJJyw08iofFbFJIFC9gK5+j1Azwm+9cvqCEfW6L0KPzHJB9zfrr1w5FBarEGzz5C4EUdcfVGt47Wy73RsM6/u5BAY3/p2dGoxo0hvmwSYmTy9oT8574tU/mRjE0M6jipsQzpdByZOM33Z4C7To/xdXCK/IlUho+DVHFxsjQDHHMJes7CzXqSJAaT4c4Rn8zibVfN1/+337cWpZZzgMwXjueqTAErKj1IbTB/R35lmrdyHTq7SNA9yDd719Uhw3PdQBmr/qWwKYa3zwIsJMGYpLiDFhBYhb+WRiqv2Zwy5fpJlxqI+lpGhCii7lKPc4fVT0v4kuTPDRDqoK+Odxyv7N4X7EDmhwadc="
+#    url: r2dbc:postgresql://localhost:5452/paramdb
+#    pool:
+#      max-create-connection-time: 2s
+#      initial-size: 5
+#      max-size: 10
+  flyway:
+    baseline-on-migrate: false
+    enabled: true
+    locations:
+      classpath:/db/migration
+    user: "{cipher}AQBzB5guoWrnGQipEG1VTyENpg/jNP0jqw4rzd53WjhvFvABZeT8VsL8644zL/rNqxzbMpJz377N5Fn4sDFl9sifndFYU9kdD0VeJ3b0EmAJ1XeO+erwvYW10XbqgNoxWAf1tV6RaS/kkmtZ/1RBNqCvWqzadKszDwTAkA4LKeagxt0EdvDWEGMDXWMsKKTgepB07RYqB2wzIbFMnO49zpxaQu3z49NiSYBlT8oPp4FkYjdmjgwqzEIcK1QJS76jfS2EMSjcFa7MC5a0h9qvxc/oL3VA0IXD9wO+zJzgmka96iw2b9i7YX/d1Z32JRBhfRhNDw4FbqnCPDXV63H8Sz/QT+08mRuK7jj7B7xhS3Qmm53QplLKZVXvaGNjmPThaWQ="
+    password: "{cipher}AQBiVZ64BDgFtaVHgqMxBfS0li+ibMyBu7I9gg6qhve61My2SRtEIq4NrnxWYARTRp8wrcg8s1tlrHJC0lRHksKftLeDduW2FXvLe26uPhThT+XIYWNUvF1bH7mqzpdBkrLgvfY0oN1Q81ra55ySEVvmPga9WLEYTn9BWUjVGIf+PL5H+qE8NIBBfRaOQT3vgNVI8lJ7j5CRTCkRZa7XO1DYF7s4xc2/gvM7i0khY6/cVQCKQ7Ge15gkMvEQKGHEmvaalP9ZT6isJ0aRE+2+2DPWlKFuY6ovh7Rl/YvEm0bvW6jMLyojE88TNokApZNQSQxR74MBqpiBGyi7as5ADtmfcRS2T287GBmnjM5kHf7cwvY9hcoJPbyUP3TTCZiR23o="
+    uri: jdbc:postgresql://localhost:5432/paramdb
+  jackson:
+    property-naming-strategy: SNAKE_CASE  # Naming convention used in languages like C, where words are in lower-case
+                                          # letters, separated by underscores
+
+# Back-end microservices
+microservice:
+  audit:
+    provider-uri: http://localhost:8072/audit   # use the gateway
+    # provider-uri: http://localhost:8300         # no use gateway, because is backoffice microservice communication
+
+# Also needed by AuthServerUserLookupService
+security:
+  clientId: param-service
+
+logging:
+  level:
+    com:
+      netflix: WARN
+      springframework:
+        web: WARN
+        core:
+          codec:
+            StringDecoder: TRACE
+      ailegorreta:
+        paramservice: DEBUG
+        resourceserver: DEBUG
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+info:
+  system: Marketplace AILegorreta
+
+# Monitoring with actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: param, env, health, headdump, info, loggers, mapping, prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+
+param-service:
+  testing: false
+
