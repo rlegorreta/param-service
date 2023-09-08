@@ -25,13 +25,18 @@ package com.ailegorreta.paramservice;
 import com.ailegorreta.commons.event.EventDTO;
 import com.ailegorreta.commons.event.EventDTODeSerializer;
 import com.ailegorreta.commons.event.EventDTOSerializer;
+import com.ailegorreta.resourceserver.utils.HasLogger;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.lifecycle.Startables;
@@ -51,9 +56,9 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
  *
  * @project param-service
  * @author rlh
- * @date August 2023
+ * @date September 2023
  */
-class TestcontainersInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+class TestcontainersInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext>, HasLogger {
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:15.1"));
 
@@ -124,14 +129,32 @@ class TestcontainersInitializer implements ApplicationContextInitializer<Configu
      */
     @Override
     public void initialize(ConfigurableApplicationContext ctx) {
-        TestPropertyValues.of(
-                "spring.kafka.bootstrap-servers=" + kafka.getBootstrapServers(),
-                "spring.datasource.url=" + postgres.getJdbcUrl(),
-                "spring.datasource.username=" + postgres.getUsername(),
-                "spring.datasource.password=" + postgres.getPassword(),
-                "spring.flyway.user=" + postgres.getUsername(),
-                "spring.flyway.password=" + postgres.getPassword()
-
-                ).applyTo(ctx.getEnvironment());
+        getLogger().info("Kafka test container bootstrap-servers: {}", kafka.getBootstrapServers());
+        getLogger().info("Postgres datasource url: {}", postgres.getJdbcUrl());
+        getLogger().info("Postgres datasource username: {}", postgres.getUsername());
+        getLogger().info("Postgres datasource password: {}", postgres.getPassword());
+        getLogger().info("Flyway user: {}", postgres.getUsername());
+        getLogger().info("Flyway password: {}", postgres.getPassword());
     }
+
+    /**
+     * Sets all environment variables without the need to create a
+     * @ActiveProfiles("integration-test")
+     *
+     * note: Do NOT use public void initialize(ConfigurableApplicationContext ctx) because
+     *       for Redis container it does not work (i.e. it tries to connect before)
+     */
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers=", () -> kafka.getBootstrapServers());
+        registry.add("spring.datasource.url", () -> postgres.getJdbcUrl());
+        registry.add("spring.datasource.username", () -> postgres.getUsername());
+        registry.add("spring.datasource.password", () -> postgres.getPassword());
+        registry.add("spring.flyway.user", () -> postgres.getUsername());
+        registry.add("spring.flyway.password", () -> postgres.getPassword());
+    }
+
+    @NotNull
+    @Override
+    public Logger getLogger() { return HasLogger.DefaultImpls.getLogger(this); }
 }

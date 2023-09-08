@@ -57,7 +57,6 @@ extra["ailegorreta-kit-version"] = "2.0.0"
 extra["queryDslVersion"] = "5.0.0"
 
 dependencies {
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -82,13 +81,13 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-stream")
 	implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-streams")
 
-	// implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")		// Reactive version
-
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	kapt("org.springframework.boot:spring-boot-configuration-processor")
 	// ^ for information of kapt example see:
 	// https://aregall.tech/integration-between-querydsl-and-spring-data-rest-using-kotlin-gradle-and-spring-boot-3
 
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	// implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")		// Reactive version
 	// implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")      // Reactive version
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")

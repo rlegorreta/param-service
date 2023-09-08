@@ -47,7 +47,7 @@ import org.springframework.test.context.ActiveProfiles
 @EmbeddedKafka(bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 /* ^ this is because: https://blog.mimacom.com/embeddedkafka-kafka-auto-configure-springboottest-bootstrapserversproperty/ */
 @ActiveProfiles("integration-tests-mvc")
-@Import(ParamserviceApplicationTests.ObjectMapperConfiguration::class)
+@Import(ParamServiceApplicationTests.ObjectMapperConfiguration::class)
 @DirtiesContext /* will make sure this context is cleaned and reset between different tests */
 /**
  * This class is and example how to build and test a REST HAL API using Kotlin, Spring Data REST, Spring Data JPA

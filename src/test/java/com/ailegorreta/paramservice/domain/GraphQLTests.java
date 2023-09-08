@@ -77,7 +77,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @date: August 2023
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-/* ^ SpringBootTest download 'all' App context. Also we can use @DataJpaTest, both test slices work */
+/* ^ SpringBootTest download 'all' App context. We can use @DataJpaTest, both test slices work */
 // @DataJpaTest
 /* ^ This is just the case we wanted to test just the GraphQl and download all context. Both test slices work */
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -89,7 +89,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("integration-tests")
 @DirtiesContext                /* will make sure this context is cleaned and reset between different tests */
 @AutoConfigureGraphQlTester
-public class GraphQlTests {
+public class GraphQLTests {
 
     @MockBean
     private StreamBridge streamBridge;

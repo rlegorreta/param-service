@@ -53,8 +53,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.UUID;
 
-
-
 /**
  * note: Spring Data GraphQL does NOT support MockMvc. Instead, we used the GraphqlTest class.
  *

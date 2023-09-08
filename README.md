@@ -9,7 +9,7 @@ are done directly called by the UI microservice. The access to Postgress is usin
 driver.
 
 note: this microservice depends with the Kafka to send notifications to the `cache-service` when
-a modifications has beeen executed.
+a modifications has been executed.
 
 
 ## Introduction
@@ -225,9 +225,9 @@ For detail information see `.github/workflows/commit-stage.yml` file.
 ```
 docker run \
     --net ailegorretaNet \
-    -p 8351:8351 \
+    -p 8350:8350 \
     -e SPRING_PROFILES_ACTIVE=local \
-    cache-service
+    param-service
 ```
 
 Or a better method use the `docker-compose` tool. Go to the directory `ailegorreta-deployment/docker-platform` and run
@@ -254,7 +254,7 @@ Second step:
 Then we have to load the image inside the minikube executing the command:
 
 ```
-image load ailegorreta/cache-service --profile ailegorreta 
+image load ailegorreta/param-service --profile ailegorreta 
 ```
 
 To verify that the image has been loaded we can execute the command that lists all minikube images:
@@ -296,7 +296,7 @@ Fifth step:
 If we want to use the project outside kubernetes we have to forward the port as follows:
 
 ```
-kubectl port-forward service/config-service 8351:80
+kubectl port-forward service/config-service 8350:80
 ```
 
 Appendix:
@@ -304,7 +304,7 @@ Appendix:
 If we want to see the logs for this `pod` we can execute the following command:
 
 ```
-kubectl logs deployment/cache-service
+kubectl logs deployment/param-service
 ```
 
 ### Using Tilt tool
@@ -313,11 +313,11 @@ To avoid all these boilerplate steps is much better and faster to use the `Tilt`
 file located in the root directory of the proyect called `TiltFile`. This file has the content:
 
 ```
-# Tilt file for config-service
+# Tilt file for param-service
 # Build
 custom_build(
     # Name of the container image
-    ref = 'cache-service',
+    ref = 'param-service',
     # Command to build the container image
     command = './gradlew bootBuildImage --imageName $EXPECTED_REF',
     # Files to watch that trigger a new build
@@ -328,7 +328,7 @@ custom_build(
 k8s_yaml(['k8s/deployment.yml', 'k8s/service.yml'])
 
 # Manage
-k8s_resource('config-service', port_forwards=['8351'])
+k8s_resource('param-service', port_forwards=['8350'])
 ```
 
 To execute all five steps manually we just need to execute the command:
@@ -346,7 +346,7 @@ http://localhost:10350
 Or execute outside Tilt the command:
 
 ```
-kubectl logs deployment/cache-service
+kubectl logs deployment/param-service
 ```
 
 In order to undeploy everything just execute the command:
@@ -355,7 +355,7 @@ In order to undeploy everything just execute the command:
 tilt down
 ```
 
-To run inside a docker desktop the microservice need to use http://cach-service:8351 path
+To run inside a docker desktop the microservice need to use http://cach-service:8350 path
 
 
 ### Reference Documentation

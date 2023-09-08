@@ -66,6 +66,9 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector
  * For GraphQL tester see:
  * https://piotrminkowski.com/2023/01/18/an-advanced-graphql-with-spring-boot/
  *
+ * Also for a problem with bootstrapServerProperty
+ * see: https://blog.mimacom.com/embeddedkafka-kafka-auto-configure-springboottest-bootstrapserversproperty/
+ *
  * @project param-service
  * @autho: rlh
  * @date: August 2023
@@ -80,9 +83,9 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector
 @EmbeddedKafka(bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 /* ^ this is because: https://blog.mimacom.com/embeddedkafka-kafka-auto-configure-springboottest-bootstrapserversproperty/ */
 @ActiveProfiles("integration-tests")
-@Import(ParamserviceApplicationTests.ObjectMapperConfiguration::class)
+@Import(ParamServiceApplicationTests.ObjectMapperConfiguration::class)
 @DirtiesContext /* will make sure this context is cleaned and reset between different tests */
-class ParamserviceApplicationTests {
+class ParamServiceApplicationTests {
 	/* StreamBridge instance is used by EventService but in @Test mode it is not instanciated, so we need to mock it:
        see: https://stackoverflow.com/questions/67276613/streambridge-final-cannot-be-mocked
        StreamBridge is a final class, With Mockito2 we can mock the final class, but by default this feature is disabled

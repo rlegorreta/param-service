@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to Enable the test containers calling the TestcontainersInitializer clazz.
- * This clazz runs Postgres & Kaka containers in parallel
+ * This clazz runs Postgres & Kafka containers in parallel
  *
  * @project param-service
  * @authr rlh

@@ -67,7 +67,6 @@ class ResourceServerConfig {
         http.authorizeHttpRequests{ auth ->  auth
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/param/**").hasAnyAuthority("SCOPE_iam.facultad")
-                .requestMatchers("/graphql/**").hasAnyAuthority("SCOPE_iam.facultad")
                 .requestMatchers("/nosecurity/**").permitAll()
             }
             .oauth2ResourceServer{ server -> server.jwt { Customizer.withDefaults<Any>() }}

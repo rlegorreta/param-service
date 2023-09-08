@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @date: August 2023
  */
 @DataJpaTest
-/* ^ This is just the case we wanted to test just the JPA Repositories and download all context */
+/* ^ This is just the case we wanted to test just the JPA Repositories and not download all context */
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 /* ^ Disables the default behavior of relying on an embedded test database since we want to use Testcontainers */
 @EnableTestContainers

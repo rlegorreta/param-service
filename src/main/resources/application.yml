@@ -55,7 +55,7 @@ spring:
             client-id: param-service
             client-secret: param-service-secret
             authorization-grant-type: client_credentials
-            scope: csys.facultad
+            scope: sys.facultad
             client-name: param-service-client-credentials
         provider:
           spring:

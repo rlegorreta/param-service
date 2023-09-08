@@ -35,6 +35,8 @@ import java.util.List;
  * GraphQL schema or Spring Data REST and therefore use GraphqlTester class or for Spring Data REST use on of the
  * following classes: DatasourceRestRepositoryTests, TemplateRestRepositoryTests and RelationshipsRestTests.
  *
+ * So the purpose to test this controller is security and future direct REST API for this microservice
+ *
  * @project: param-service
  * @author: rlh
  * @date: August 2023
